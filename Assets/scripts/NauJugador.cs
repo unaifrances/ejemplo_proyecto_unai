@@ -1,19 +1,26 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NewMonoBehaviourScript : MonoBehaviour
 {
     public float vel = 10f;
+    private Vector3 limitInferiorEsquerra;
+    private Vector3 limitSuperiorDret;
     private Camera camera;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         camera = Camera.main;
+        float distanciaZCameraNau = Mathf.Abs(transform.position.z - camera.transform.position.z);
+        limitInferiorEsquerra = camera.ViewportToWorldPoint(new Vector3(0, 0, distanciaZCameraNau));
+        limitSuperiorDret = camera.ViewportToWorldPoint(new Vector3(1, 1, distanciaZCameraNau));
     }
 
     // Update is called once per frame
     void Update()
     {
+        controlLimitsPantalla();
         MovimentNau();
 
     }
@@ -21,8 +28,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     void MovimentNau()
     {
         //control limits pantalla   
-        Vector3 limitInferiorEsquerra = camera.ViewportToWorldPoint(new Vector2(0, 0));
-        Vector3 limitSuperiorDret = camera.ViewportToWorldPoint(new Vector2(1, 1));
+
 
         //moviment nau
         float direccioHoritzontal = Input.GetAxisRaw("Horizontal");
@@ -34,5 +40,16 @@ public class NewMonoBehaviourScript : MonoBehaviour
         nouDesplacament.y = Math.Clamp(nouDesplacament.y, limitInferiorEsquerra.y, limitSuperiorDret.y);
         //Debug.Log("Time.deltaTime =" + Time.deltaTime);
         transform.position += nouDesplacament;
+    }
+    void controlLimitsPantalla()
+    {
+
+        Vector3 novaPos = transform.position;
+
+        novaPos.x = Math.Clamp(novaPos.x, limitInferiorEsquerra.x, limitSuperiorDret.x);
+        novaPos.y = Math.Clamp(novaPos.y, limitInferiorEsquerra.y, limitSuperiorDret.y);
+
+        transform.position = novaPos;
+
     }
 }
